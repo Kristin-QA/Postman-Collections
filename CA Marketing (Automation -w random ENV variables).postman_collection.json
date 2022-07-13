@@ -1,0 +1,1596 @@
+{
+	"info": {
+		"_postman_id": "e812d688-ea63-4552-97f4-36193e1e7032",
+		"name": "CA Marketing (Automation /w random ENV variables)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19022718"
+	},
+	"item": [
+		{
+			"name": "Create New  addresses",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.unset(\"ID\"); //will clear ID in ENV",
+							"pm.environment.unset(\"COMPANY\"); //will clear COMPANY in ENV",
+							"pm.environment.set (\"COMPANY\",\"Apple-\" + new Date().getTime()); //will make new ENV COMPANY Value Before request will be sent to server + concatination of random numbers for company number for every request",
+							"",
+							"//Snippet:",
+							"//pm.environment.unset(\"variable_key\");",
+							"//pm.environment.set(\"variable_key\", \"variable_value\");",
+							"",
+							"// or",
+							"// pm.enviroment.clear()"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"}); //Status",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"}); //Time",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"}); //Size",
+							"",
+							"//set ENV var ID after 1st POST:",
+							"const jsonData = pm.response.json();",
+							"pm.environment.set(\"ID\", jsonData.id); // Will take id from Response Body and put it to ENV \"ID\" value throug .set()",
+							"",
+							"pm.test(\"Body contains string ID\",()  => {",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"}); // Partial checking id ",
+							"",
+							"pm.test(\"ID is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get (\"ID\"));",
+							"}); //Full checking id ",
+							"",
+							"",
+							"//Code and Time cchecking  Tests with DRY code",
+							"//test['Response Code is 200 OK same test for 200 code'] = responseCode.code === 200;",
+							"//test['Response Time is Acceptable same test for Time'] = responseTime < 1000;",
+							"//test['Response Size is Acceptable same test for Size'] = responseSize < 2000;",
+							"",
+							"",
+							"pm.test(\"Response Assertions\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response Header is present and correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Content-Length\", \"45\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"}); //Header",
+							"",
+							"pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"",
+							" ",
+							"",
+							" if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+						"key": "Authorization",
+						"value": "gUa2XbBtAtXcS7GZJeZENG_VrKsRB85fp2H8c52PeqM.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA2LTI5VDIzOjAyOjQ5LjEwNFoiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjgyMGIxMjY0LTM1OTEtNGNhZS05OWZkLTI2ZjI2N2VmZTUxZiIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNi0zMFQwMzowMjo0OS4xMDRaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"address\": {\n        \"fullName\": {\n            \"firstName\": \"{{FN}}\",\n            \"lastName\": \"{{LN}}\"\n        },\n        \"company\": \"{{COMPANY}}\",\n        \"taxInfo\": {\n            \"id\": null,\n            \"type\": null\n        },\n        \"addressLine1\": \"4444 Bedford Avenue\",\n        \"addressLine2\": \"1A\",\n        \"street\": {\n            \"name\": null,\n            \"number\": null\n        },\n        \"city\": \"Brooklyn\",\n        \"country\": \"USA\",\n        \"subdivision\": \"NY\",\n        \"zipCode\": \"11229\",\n        \"phoneNumber\": \"1234567890\",\n        \"location\": null\n    },\n    \"setAsDefault\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all  postal addresses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 7000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(7000);",
+							"",
+							"});",
+							"",
+							"pm.test(\"Body contains string ID\",()  => {",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"}); // Partial checking id ",
+							"",
+							"pm.test(\"ID is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get (\"ID\"));",
+							"}); //Full checking id ",
+							" ",
+							"",
+							" pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Responce Header is present correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"    ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all postal adresses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Header is present and correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"",
+							"pm.test(\"Body has brackets\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"{}\");",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true",
+							"} else if (responseCode.code === 400) {",
+							"    tests[\"Bad Request\"] = false;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify  address was deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Body has all Keys \", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"message\");",
+							"    pm.expect(pm.response.text()).to.include(\"details\");",
+							"    pm.expect(pm.response.text()).to.include(\"cant_find\");",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"Can't find deleted ID\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.details.cant_find).to.eql(\"address_id:\",(\"ID\"));",
+							"});",
+							"",
+							"",
+							"pm.test(\"Header is present correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Content-Length\", \"191\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"}else if (responseCode.code === 400) {",
+							"    tests[\"Bad Request, check request value\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New  Specific adress",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.unset(\"ID\"); //will clear ID in ENV",
+							"pm.environment.unset(\"COMPANY2\"); //will clear COMPANY in ENV",
+							"pm.environment.set (\"COMPANY2\",\"Google-\" + new Date().getTime()); //will make new ENV COMPANY Value Before request will be sent to server + concatination of random numbers for company number for every request",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"",
+							"//set ENV var ID after 1st POST:",
+							"const jsonData = pm.response.json();",
+							"pm.environment.set(\"ID2\", jsonData.id); // Will take id from Response Body and put it to ENV \"ID\" value throug .set()",
+							"",
+							" pm.test(\"Body contains string ID\",()  => {",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"}); // Partial checking id ",
+							"",
+							"pm.test(\"ID is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get (\"ID2\"));",
+							"}); //Full checking id ",
+							"",
+							"",
+							"",
+							"//test['Response Code is 200 OK same test for 200 code'] = responseCode.code === 200;",
+							"//test['Response Time is Acceptable same test for Time'] = responseTime < 1000;",
+							"",
+							"",
+							"pm.test(\"Response Assertions\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response Header is present and correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Content-Length\", \"45\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"});",
+							"",
+							"pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"",
+							"",
+							" if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+						"key": "Authorization",
+						"value": "gUa2XbBtAtXcS7GZJeZENG_VrKsRB85fp2H8c52PeqM.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA2LTI5VDIzOjAyOjQ5LjEwNFoiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjgyMGIxMjY0LTM1OTEtNGNhZS05OWZkLTI2ZjI2N2VmZTUxZiIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNi0zMFQwMzowMjo0OS4xMDRaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"address\": {\n        \"fullName\": {\n            \"firstName\": \"{{FN2}}\",\n            \"lastName\": \"{{LN2}}\"\n        },\n        \"company\": \"{{COMPANY2}}\",\n        \"taxInfo\": {\n            \"id\": null,\n            \"type\": null\n        },\n        \"addressLine1\": \"1245 Ave X\",\n        \"addressLine2\": \"Apt 4 M\",\n        \"street\": {\n            \"name\": null,\n            \"number\": null\n        },\n        \"city\": \"Brooklyn\",\n        \"country\": \"USA\",\n        \"subdivision\": \"NY\",\n        \"zipCode\": \"11235\",\n        \"phoneNumber\": \"6464316500\",\n        \"location\": null\n    },\n    \"setAsDefault\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific  postal addresses Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"    ",
+							"",
+							"pm.test(\"New ID is in response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ID2\"));",
+							"});",
+							"",
+							"pm.test(\"Body contains string ID\",()  => {",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"}); // Partial checking id ",
+							"",
+							"pm.test(\"ID is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.id).to.eql(pm.environment.get (\"ID2\"));",
+							"}); //Full checking id ",
+							"",
+							"pm.test(\"Company is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.company).to.eql(pm.environment.get (\"COMPANY2\"));",
+							"});",
+							"",
+							"pm.test(\"Phone number is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.phoneNumber).to.eql(\"6464316500\"); //Hard code or can be added to ENV",
+							"});",
+							"",
+							"pm.test(\"zip code is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.zipCode).to.eql(\"11235\");",
+							"});",
+							"",
+							"// + add all obj keys to check its value (FirstName, LastName, City...ets. Dont't forget to call obj levels according its position (obj of 1st level, 2nd level, ets.) )",
+							"   ",
+							"",
+							"//NOT full test, doesn't check all obj levels, stopped on country \"USA\", which is HardCode,NOT ftom Environment",
+							"pm.test(\"Entire response is correct\", function () {",
+							"    const  jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.id).to.eql(pm.environment.get(\"ID2\"));",
+							"    pm.expect(jsonData.address.fullName.firstName).to.eql(pm.environment.get(\"FN2\"));",
+							"    pm.expect(jsonData.address.fullName.lastName).to.eql(pm.environment.get(\"LN2\"));",
+							"    pm.expect(jsonData.address.country).to.eql(\"USA\");",
+							"",
+							"});",
+							"",
+							"",
+							"//Same as above Test, but with two variables",
+							"pm.test(\"Entire response is correct\", function () {",
+							"    const  jsonData = pm.response.json();",
+							"    var EnvData = pm.environment.get();",
+							"    pm.expect(jsonData.address.id).to.eql(EnvData.ID2);",
+							"    pm.expect(jsonData.address.fullName.firstName).to.eql(EnvData.FN2);",
+							"    pm.expect(jsonData.address.fullName.lastName).to.eql(EnvData.LN2);",
+							"    pm.expect(jsonData.address.country).to.eql(\"USA\");",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Body has all Keys \", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"address\");",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"    pm.expect(pm.response.text()).to.include(\"fullName\");",
+							"    pm.expect(pm.response.text()).to.include(\"lastName\");",
+							"    pm.expect(pm.response.text()).to.include(\"country\");",
+							"    pm.expect(pm.response.text()).to.include(\"subdivision\");",
+							"    pm.expect(pm.response.text()).to.include(\"city\");",
+							"    pm.expect(pm.response.text()).to.include(\"zipCode\");",
+							"    pm.expect(pm.response.text()).to.include(\"phoneNumber\");",
+							"    pm.expect(pm.response.text()).to.include(\"company\");",
+							"    pm.expect(pm.response.text()).to.include(\"addressLine1\");",
+							"    pm.expect(pm.response.text()).to.include(\"addressLine2\");",
+							"    pm.expect(pm.response.text()).to.include(\"isDefaultAddress\");",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID2}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update specific adress Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Body has brackets\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"{}\");",
+							"",
+							"});",
+							"pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.unset(\"New_COMPANY\");// because will be change company",
+							"pm.environment.set (\"New_COMPANY\",\"Tesla-\" + new Date().getTime()); // to make unique company number"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"address\": {\n        \"id\": \"{{ID2}}\",\n        \"fullName\": {\n            \"firstName\": \"{{New_FN}}\",\n            \"lastName\": \"{{New_LN}}\"\n        },\n        \"company\": \"{{New_COMPANY}}\",\n        \"taxInfo\": {\n            \"id\": null,\n            \"type\": null\n        },\n        \"addressLine1\": \"1245 Ave X\",\n        \"addressLine2\": \"Apt 4 M\",\n        \"street\": {\n            \"name\": null,\n            \"number\": null\n        },\n        \"city\": \"Brooklyn\",\n        \"country\": \"USA\",\n        \"subdivision\": \"NY\",\n        \"zipCode\": \"11235\",\n        \"phoneNumber\": \"6464316500\",\n        \"location\": null\n    },\n    \"setAsDefault\": false,\n    \"fieldMask\": {\n        \"paths\": [\n            \"fullName.firstName\",\n            \"fullName.lastName\",\n            \"company\",\n            \"addressLine1\",\n            \"addressLine2\",\n            \"city\",\n            \"country\",\n            \"subdivision\",\n            \"zipCode\",\n            \"phoneNumber\",\n            \"setAsDefault\"\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/{{ID2}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Updated specific adress",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Body has all Keys \", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"address\");",
+							"    pm.expect(pm.response.text()).to.include(\"id\");",
+							"    pm.expect(pm.response.text()).to.include(\"fullName\");",
+							"    pm.expect(pm.response.text()).to.include(\"lastName\");",
+							"    pm.expect(pm.response.text()).to.include(\"country\");",
+							"    pm.expect(pm.response.text()).to.include(\"subdivision\");",
+							"    pm.expect(pm.response.text()).to.include(\"city\");",
+							"    pm.expect(pm.response.text()).to.include(\"zipCode\");",
+							"    pm.expect(pm.response.text()).to.include(\"phoneNumber\");",
+							"    pm.expect(pm.response.text()).to.include(\"company\");",
+							"    pm.expect(pm.response.text()).to.include(\"addressLine1\");",
+							"    pm.expect(pm.response.text()).to.include(\"addressLine2\");",
+							"    pm.expect(pm.response.text()).to.include(\"isDefaultAddress\");",
+							"",
+							"});",
+							"",
+							"pm.test(\"Body has matched key and value\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.id === (\"ID2\");",
+							"});",
+							"",
+							"//Seme test as above, but exact matching",
+							"pm.test(\"Company is current \", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.company === (pm.environment.get (\"New_COMPANY\"));",
+							"});",
+							"",
+							"pm.test(\"Response should be ok to process\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.not.have.jsonBody (\"Error\");",
+							"});",
+							"",
+							"pm.test(\"Entire response is correct\", function () {",
+							"    const  jsonData = pm.response.json();",
+							"    pm.expect(jsonData.address.id).to.eql(pm.environment.get(\"ID2\"));",
+							"    pm.expect(jsonData.address.fullName.firstName).to.eql(pm.environment.get(\"New_FN2\"));",
+							"    pm.expect(jsonData.address.fullName.lastName).to.eql(pm.environment.get(\"New_LN2\"));",
+							"    pm.expect(jsonData.address.compony).to.eql(pm.environment.get(\"New_COMPANY\"));",
+							"    pm.expect(jsonData.address.country).to.eql(\"USA\");",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Header is present and correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"//Partial matching",
+							"pm.test(\"Company is Tesla \", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"New_COMPANY\"));",
+							"",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID2}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete specific postsl adress 2nd time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Header is present and correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"Body has brackets\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"{}\");",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true",
+							"} else if (responseCode.code === 400) {",
+							"    tests[\"Bad Request\"] = false;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID2}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Specific address was deleted Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response size is less than 2000b\", function () {",
+							"    pm.expect(pm.response.responseSize).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Body has all Keys \", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"message\");",
+							"    pm.expect(pm.response.text()).to.include(\"details\");",
+							"    pm.expect(pm.response.text()).to.include(\"cant_find\");",
+							"    ",
+							"});",
+							"",
+							"",
+							"pm.test(\"Header is present correct\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=utf-8\");",
+							"    pm.response.to.have.header(\"Content-Length\", \"191\");",
+							"    pm.response.to.have.header(\"Connection\", \"keep-alive\");",
+							"    pm.response.to.have.header(\"Server\", \"Pepyaka/1.19.10\");",
+							"    ",
+							"});",
+							"",
+							"if(responseCode.code === 200) {",
+							"    tests[\"Backend is available, response code is 200\"] = true;",
+							"}else if (responseCode.code === 400) {",
+							"    tests[\"Bad Request, check request value\"] = true;",
+							"} else if (responseCode.code === 401) {",
+							"    tests[\"Not authorised, check access token or Log in\"] = false;",
+							"} else if (responseCode.code === 403) {",
+							"    tests[\"Forbiden\"] = false;",
+							"} else if (responseCode.code === 404) {",
+							"    tests[\"Not Found. Check if you made correct request\"] = false;",
+							"} else if (responseCode.code === 422) {",
+							"    tests[\"the instance is not valid\"] = false;",
+							"} else {",
+							"    tests[\"Something went wrong. Check response body\"] = false;",
+							"}",
+							"",
+							"switch (responseCode.code) {",
+							"    case 200:",
+							"        tests[\"200 ok. The request has succeeded\"] = true;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = true;",
+							"        break;",
+							"    case 404:",
+							"        tests[\"404 Not found\"] = false;",
+							"        break;",
+							"    case 400:",
+							"        tests[\"400 Bad Request\"] = false;",
+							"        break;",
+							"    case 401:",
+							"        tests[\"401 BUnauthorized\"] = false;",
+							"        break;",
+							"    case 500:",
+							"        tests[\"500 Internal Server Error\"] = false;",
+							"        break;",
+							"    case 503:",
+							"        tests[\"503 Server unavailable\"] = false;",
+							"        break;",
+							"    case 502:",
+							"        tests[\"502 bad gateway\"] = false;",
+							"        break;",
+							"    case 599:",
+							"        tests[\"599 Network connect timeout error\"] = false;",
+							"        break;",
+							"    case 408:",
+							"        tests[\"408 Request is timeout\"] = false;",
+							"        break;",
+							"    default:",
+							"        tests[\"Sorry, we are out of\" + responseCode.code] = false;",
+							"}",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "0fUoDM0Tv--zMHloAzPj9r16qWI2FB07A0kmQar0twI.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTAxLTA5VDAwOjMwOjI3LjYwM1oiLCJ1aWQiOiIxNWY0Y2ViNi0xMGJkLTRiZDYtOWZkMy0wMjkwYmUyYmYxM2IiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6IjNjNmY4OWI1LTcxOWUtNDA4Ny05OTA1LTc5YTJkMmNjNWI1ZSIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wMS0wOVQwNDozMDoyNy42MDNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/{{ID2}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"{{ID2}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "in",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "G8GyugF-tKmH5BrYOk4aYMiMG8pwbfbQS8tObOEYMFo.eyJpbnN0YW5jZUlkIjoiZjQ2Y2Q1MDItZjcyZi00NGY3LTk2MzgtNWRhMWRlYjBiNGU3IiwiYXBwRGVmSWQiOiIxNTA1Yjc3NS1lODg1LWViMWItYjY2NS0xZTQ4NWQ5YmY5MGUiLCJtZXRhU2l0ZUlkIjoiMjhiNzkzZDYtNTQyNC00MDU4LTgwNDktMDI2YTRkYjAyODJmIiwic2lnbkRhdGUiOiIyMDIyLTA3LTEyVDAwOjMzOjQwLjkyM1oiLCJ1aWQiOiJjNzNhZDNmNC01NjM2LTRkZjYtODRmZi05ZGUzZDViNmJhYmQiLCJkZW1vTW9kZSI6ZmFsc2UsImFpZCI6ImEwYTQ1NzlmLTM2ODQtNGEyYS05OWE3LWI5YTVhYzQ0MDljMCIsImJpVG9rZW4iOiJkY2RiNDZkNC1hMzBiLTA0YWYtMTY3MS01ZmNiOTMwMDljYzgiLCJzaXRlT3duZXJJZCI6ImY5MTRmMTFjLWFhYjMtNDUyNy04ZDRlLWJhYjc2MjE0M2E2MCIsImV4cGlyYXRpb25EYXRlIjoiMjAyMi0wNy0xMlQwNDozMzo0MC45MjNaIiwiaGFzVXNlclJvbGUiOmZhbHNlfQ",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
